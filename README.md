@@ -6,16 +6,18 @@
 O presente projeto foi originado no contexto das atividades da disciplina de pós-graduação *IA376L - Deep Learning aplicado a Síntese de Sinais*, 
 oferecida no primeiro semestre de 2022, na Unicamp, sob supervisão da Profa. Dra. Paula Dornhofer Paro Costa, do Departamento de Engenharia de Computação e Automação (DCA) da Faculdade de Engenharia Elétrica e de Computação (FEEC).
 
-> Incluir nome RA e foco de especialização de cada membro do grupo. Os grupos devem ter no máximo três integrantes.
-> |Nome  | RA | Especialização|
-> |--|--|--|
-> | Ronnypetson Souza da Silva  | 211848  | Ciência da Computação|
+|Nome  | RA | Especialização|
+|--|--|--|
+| Ronnypetson Souza da Silva  | 211848  | Ciência da Computação|
 
 
 ## Descrição Resumida do Projeto
-> Descrição do tema do projeto, incluindo contexto gerador, motivação.
-> Descrição do objetivo principal do projeto.
 A Transformer-based autoregressive language model for chess PGN generation resembling human games.
+> Descrição do tema do projeto, incluindo contexto gerador, motivação.
+
+O tema do projeto é a geração de partidas de Xadrez (ref.), usando a notação PGN (ref.), que sejam semelhantes à partidas entre mestres do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer (ref.), tais como BERT (ref.). Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na ficção da literatura e do cinema (ref. Gambito da Rainha, Simpsons, Death Note, Harry Potter). Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
+
+> Descrição do objetivo principal do projeto.
 > Esclarecer qual será a saída do modelo de síntese, ou generativo.
 > 
 > Incluir nessa seção link para vídeo de apresentação da proposta do projeto (máximo 5 minutos).
