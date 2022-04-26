@@ -87,3 +87,11 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+models/
+references/
+reports/
+Makefile
+setup.py
+test_environment.py
+tox.ini
