@@ -15,11 +15,16 @@ oferecida no primeiro semestre de 2022, na Unicamp, sob supervisão da Profa. Dr
 A Transformer-based autoregressive language model for chess PGN generation resembling human games.
 > Descrição do tema do projeto, incluindo contexto gerador, motivação.
 
-O tema do projeto é a geração de partidas de Xadrez (ref.), usando a notação PGN (ref.), que sejam semelhantes à partidas entre mestres do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer (ref.), tais como BERT (ref.). Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na ficção da literatura e do cinema (ref. Gambito da Rainha, Simpsons, Death Note, Harry Potter). Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
+O tema do projeto é a geração de partidas de Xadrez (ref.), usando a notação PGN (ref.), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer (ref.), tais como BERT (ref.). Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na ficção da literatura e do cinema (ref. Gambito da Rainha, Simpsons, Death Note, Harry Potter), com geração condicionada e muita flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
+
+Os modelos de linguagem autorregressivos baseados em Transformer têm mudado o estado-da-arte em várias tarefas de lingaugem natural, tais como (ref.). Também têm sido usados na geração de código em linguagens de programação (ref.), imagens vetorizadas tipo SVG (ref.) e arquivos no formato MIDI (ref.). A princípio, uma base de textos em  qualquer linguagem, natual ou não, com um vocabulário de tamanho razoável (menor ou comparável com o vocabulário de uma linguagem natural como o Inglês), pode ser modelada com esse tipo de técnica. Isso inclui os textos nos arquivos PGN de Xadrez, que possuem um vocabulário bem menor do que o do Inglês - cerca de 14700 palavras.
 
 > Descrição do objetivo principal do projeto.
+
+O objetivo principal do projeto é a criação de um modelo generativo que seja capaz de produzir sequências de lances de Xadrez no formato PGN, de modo que gere partidas de Xadrez semelhantes à partidas jogadas por seres humanos no nível profissional (partidas jogadas em torneios). O modelo deve ser capaz de gerar partidas do início como também de completar partidas já começadas.
+
 > Esclarecer qual será a saída do modelo de síntese, ou generativo.
-> 
+
 > Incluir nessa seção link para vídeo de apresentação da proposta do projeto (máximo 5 minutos).
 
 ## Metodologia Proposta
