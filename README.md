@@ -124,7 +124,6 @@ A avaliação poderá ser tanto objetiva quanto subjetiva. Na primeira, é poss�
 | Escrita de relatório  |  |  |  |  |  |  | 🟢 |
 
 ## Referências Bibliográficas
-> Apontar nesta seção as referências bibliográficas adotadas no projeto.
 
 1. ["Standard: Portable Game Notation Specification and Implementation Guide"](https://archive.org/details/pgn-standard-1994-03-12). 12 March 1994.
 2. ["Language Models are Few-Shot Learners"](https://arxiv.org/abs/2005.14165) (2020). Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, Dario Amodei.
@@ -135,6 +134,3 @@ A avaliação poderá ser tanto objetiva quanto subjetiva. Na primeira, é poss�
 7. [The Go Transformer: Natural Language Modeling for Game Play](https://arxiv.org/abs/2007.03500) (2020). Matthew Ciolino, David Noever, Josh Kalin.
 8. [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (2017). Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
 9. [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805) (2018). Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova.
-
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
