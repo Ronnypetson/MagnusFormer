@@ -1,5 +1,5 @@
-# `MagnusFormer`: treinando Transformers para gerar partidas de Xadrez
-# `MagnusFormer`: training Transformers to generate Chess games
+# `MagnusFormer`: gerando partidas de Xadrez com Transformers.
+# `MagnusFormer`: generating Chess games with Transformers.
 
 ## Apresentação
 
