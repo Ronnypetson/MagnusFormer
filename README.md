@@ -79,6 +79,8 @@ A partida pode ser recuperada usando um leitor de PGN:
 
 ### Vídeo de apresentação
 
+https://youtu.be/NV8Dlu6GhFQ
+
 ## Metodologia Proposta
 
 ### Base de dados
