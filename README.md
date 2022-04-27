@@ -85,17 +85,44 @@ A partida pode ser recuperada usando um leitor de PGN:
 > * Qual(is) base(s) de dado(s) o projeto pretende utilizar, justificando a(s) escolha(s) realizadas.
 
 ### Base de dados
+
 A base de dados a ser usada é um conjunto de várias partidas em torneios, disponível no site [The Week in Chess](https://theweekinchess.com/zips). Ao todo são mais de 1400 arqivos *zip*, cada um contendo partidas de torneios profissionais ao redor do mundo em cada semana. Todas as partidas estão no formato PGN.
 
 > * Quais abordagens de modelagem generativa o grupo já enxerga como interessantes de serem estudadas.
 
 ### Abordagens de modelagem generativa
+
 A ideia inicial é usar as anotações de lances (ex: ```Nf3```, ```e4```, ```Be7```) como palavras individuais em um texto para servir de tokens. Daí um modelo autorregressivo tipo BERT seria treinado a partir dessa tokenização. Uma vez que o modelo é treinado, a geração de novas partidas ou complementos de partidas iniciadas pode ocorrer com a geração de um token por vez ou através de *beam search*, onde os próximos **k** lances são escolhidos de modo a maximizar a probabilidade de acordo com o modelo. A desvantagem do beam search está no custo computacional elevado, crescendo exponencialmente com o tamanho de **k**.
 
 > * Artigos de referência já identificados e que serão estudados ou usados como parte do planejamento do projeto
+
+### Artigos de referência
+
+1. [The Chess Transformer: Mastering Play using Generative Language Models](https://arxiv.org/abs/2008.04057) (2020). David Noever, Matt Ciolino, Josh Kalin.
+2. [The Go Transformer: Natural Language Modeling for Game Play](https://arxiv.org/abs/2007.03500) (2020). Matthew Ciolino, David Noever, Josh Kalin.
+3. [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (2017). Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
+4. [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805) (2018). Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova.
+
 > * Ferramentas a serem utilizadas (com base na visão atual do grupo sobre o projeto).
+
+### Ferramentas
+
+1. [Python 3.7](https://www.python.org/downloads/release/python-370/) ou superior.
+2. [Google Colab](https://colab.research.google.com/?utm_source=scs-index) para suporte à execução de notebooks na nuvem com GPU.
+3. Biblioteca [python-chess](https://python-chess.readthedocs.io/en/latest/) para processar as partidas no formato PGN.
+4. Biblioteca [Hugginface Transformers](https://huggingface.co/docs/transformers/index) para carregar e treinar os modelos de linguagem.
+
 > * Resultados esperados
+
+### Resultados esperados
+
+Espera-se que o modelo generativo crie partidas que sejam coerentes do ponto de vista do Xadrez profissional, pelo menos até a fase de abertura do jogo. Também espera-se que o modelo seja capaz de continuar partidas com lances básicos.
+
 > * Proposta de avaliação
+
+### Proposta de avaliação
+
+A avaliação poderá ser tanto objetiva quanto subjetiva. Na primeira, é possível usar *engines* de Xadrez, que são programas de computador capazes de quantificar qualidade de uma posição para ambos os jogadores, e usar os seus escores como métrica para a qualidade dos lances gerados pelo modelo. Existem várias engines de Xadrez acessíveis, como as usadas no [Chess.com](https://chess.com) e no [Lichess](https://lichess.org). Na forma subjetiva, é preciso pedir a avaliação de algum jogador de Xadrez com experiência em torneios.
 
 ## Cronograma
 > Proposta de cronograma. Procure estimar quantas semanas serão gastas para cada etapa do projeto.
