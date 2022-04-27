@@ -1,5 +1,5 @@
-# `MagnusFormer`
-# `MagnusFormer`
+# `MagnusFormer`: treinando Transformers para gerar partidas de Xadrez
+# `MagnusFormer`: training Transformers to generate Chess games
 
 ## Apresentação
 
@@ -12,18 +12,18 @@ oferecida no primeiro semestre de 2022, na Unicamp, sob supervisão da Profa. Dr
 
 
 ## Descrição Resumida do Projeto
-A Transformer-based autoregressive language model for chess PGN generation resembling human games.
-> Descrição do tema do projeto, incluindo contexto gerador, motivação.
 
-O tema do projeto é a geração de partidas de Xadrez (ref.), usando a notação PGN (*Portable Game Notation*) (ref.), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer (ref.), tais como BERT (ref.). Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na ficção da literatura e do cinema (ref. Gambito da Rainha, Simpsons, Death Note, Harry Potter), com geração condicionada e muita flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
+### Tema do projeto, contexto e motivação
 
-Os modelos de linguagem autorregressivos baseados em Transformer têm mudado o estado-da-arte em várias tarefas de lingaugem natural, tais como (ref.). Também têm sido usados na geração de código em linguagens de programação (ref.), imagens vetorizadas tipo SVG (ref.) e arquivos no formato MIDI (ref.). A princípio, uma base de textos em  qualquer linguagem, natual ou não, com um vocabulário de tamanho razoável (menor ou comparável com o vocabulário de uma linguagem natural como o Inglês), pode ser modelada com esse tipo de técnica. Isso inclui os textos nos arquivos PGN de Xadrez, que possuem um vocabulário bem menor do que o do Inglês - cerca de 14700 *tokens*.
+O tema do projeto é a geração de partidas de Xadrez, usando a notação PGN (*Portable Game Notation*) (ref.), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer (ref.), tais como BERT (ref.). Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na ficção da literatura e do cinema (ref. Gambito da Rainha, Simpsons, Death Note, Harry Potter), com geração condicionada e flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
 
-> Descrição do objetivo principal do projeto.
+Os modelos de linguagem autorregressivos baseados em Transformer têm mudado o estado-da-arte em várias tarefas de lingaugem natural, tais como (ref.). Também têm sido usados na geração de código em linguagens de programação (ref.), imagens vetorizadas tipo SVG (ref.) e arquivos no formato MIDI (ref.). A princípio, uma base de textos em  qualquer linguagem, natual ou não, com um vocabulário de tamanho razoável (menor ou comparável com o vocabulário de uma linguagem natural como o Inglês), pode ser modelada com esse tipo de técnica. Isso inclui os textos nos arquivos PGN de Xadrez, que possuem um vocabulário - cerca de 14700 *tokens* - bem menor do que o do Inglês.
+
+### Objetivo
 
 O objetivo principal do projeto é a criação de um modelo generativo que seja capaz de produzir sequências de lances de Xadrez no formato PGN, de modo que gere partidas de Xadrez semelhantes à partidas jogadas por seres humanos no nível profissional (partidas jogadas em torneios). O modelo deve ser capaz de gerar partidas do início como também de completar partidas já começadas.
 
-> Esclarecer qual será a saída do modelo de síntese, ou generativo.
+### Saída do modelo
 
 A saída do modelo será uma sequência de anotações de lances de Xadrez numa versão simplificada do formato PGN. Nesse formato, cada lance especifica uma peça no tabuleiro e a nova casa que deve ocupar. As peças, exceto peões, são representados por letras da seguinte forma:
 
@@ -36,7 +36,9 @@ A saída do modelo será uma sequência de anotações de lances de Xadrez numa 
 
 As linhas e colunas do tabuleiro são representadas pelos números de ```1``` à ```8``` e pelas letras de ```a``` à ```h```, como mostra a figura abaixo. Dessa maneira, quando queremos dizer "mover o cavalo para a casa f3", escrevemos ```Nf3``` na notação PGN. Quando a peça a ser movida é ambígua, pode-se especificar a coluna e/ou a linha da casa que a peça ocupa caso seja necessário, como por exemplo ```Ngf3```, ```N5f3``` ou ```Ne5f3```. Esses lances também representam o movimento de um cavalo para a casa ```f3```.
 
-![](https://upload.wikimedia.org/wikipedia/commons/b/b6/SCD_algebraic_notation.svg)
+<p align="center">
+  <img src='https://upload.wikimedia.org/wikipedia/commons/b/b6/SCD_algebraic_notation.svg' width='300'>
+</p>
 
 Um arquivo PGN completo tem o seguinte formato
 
@@ -69,12 +71,27 @@ b3 Ke6 a3 Kd6 axb4 cxb4 Ra5 Nd5 f3 Bc8 Kf2 Bf5 Ra7 g6 Ra6+ Kc5 Ke1 Nf4 g3 Nxh3
 Kd2 Kb5 Rd6 Kc5 Ra6 Nf2 g4 Bd3 Re6 1/2-1/2
 ```
 
-> Incluir nessa seção link para vídeo de apresentação da proposta do projeto (máximo 5 minutos).
+A partida pode ser recuperada usando um leitor de PGN:
+
+<p align="center">
+  <img src='/src/visualization/board.gif' width='300'>
+</p>
+
+### Vídeo de apresentação
 
 ## Metodologia Proposta
 > Para a primeira entrega, a metodologia proposta deve esclarecer:
+
 > * Qual(is) base(s) de dado(s) o projeto pretende utilizar, justificando a(s) escolha(s) realizadas.
+
+### Base de dados
+A base de dados a ser usada é um conjunto de várias partidas em torneios, disponível no site [The Week in Chess](https://theweekinchess.com/zips). Ao todo são mais de 1400 arqivos *zip*, cada um contendo partidas de torneios profissionais ao redor do mundo em cada semana. Todas as partidas estão no formato PGN.
+
 > * Quais abordagens de modelagem generativa o grupo já enxerga como interessantes de serem estudadas.
+
+### Abordagens de modelagem generativa
+A ideia inicial é usar as anotações de lances (ex: ```Nf3```, ```e4```, ```Be7```) como palavras individuais em um texto para servir de tokens. Daí um modelo autorregressivo tipo BERT seria treinado a partir dessa tokenização. Uma vez que o modelo é treinado, a geração de novas partidas ou complementos de partidas iniciadas pode ocorrer com a geração de um token por vez ou através de *beam search*, onde os próximos **k** lances são escolhidos de modo a maximizar a probabilidade de acordo com o modelo. A desvantagem do beam search está no custo computacional elevado, crescendo exponencialmente com o tamanho de **k**.
+
 > * Artigos de referência já identificados e que serão estudados ou usados como parte do planejamento do projeto
 > * Ferramentas a serem utilizadas (com base na visão atual do grupo sobre o projeto).
 > * Resultados esperados
