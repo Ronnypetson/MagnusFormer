@@ -15,7 +15,7 @@ oferecida no primeiro semestre de 2022, na Unicamp, sob supervisão da Profa. Dr
 
 ### Tema do projeto, contexto e motivação
 
-O tema do projeto é a geração de partidas de Xadrez, usando a notação PGN (*Portable Game Notation*), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer, tais como BERT. Partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na literatura e no cinema (ex: *O Gambito da Rainha*, *Os Simpsons*, *Death Note*, *Harry Potter*), com geração condicionada e flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
+O tema do projeto é a geração de partidas de Xadrez, usando a notação PGN (*Portable Game Notation*), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer, tais como BERT (*Masked Language Model*) e GPT (*Causal Language Model*). A aplicação mais importante de um modelo generativo de Xadrez que imita jogadores humanos é tornar as *engines* mais parecidas com os humanos nos lances. Outra aplicação de partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na literatura e no cinema (ex: *O Gambito da Rainha*, *Os Simpsons*, *Death Note*, *Harry Potter*), com geração condicionada e flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
 
 Os modelos de linguagem autorregressivos baseados em Transformer têm mudado o estado-da-arte em várias tarefas de linguagem natural, tais como tradução, reponder à perguntas, raciocínio de bom senso e interpretação de texto. Também têm sido usados na geração de código em linguagens de programação, imagens vetorizadas tipo SVG e arquivos no formato MIDI. A princípio, uma base de textos em  qualquer linguagem, natual ou não, com um vocabulário de tamanho razoável (menor ou comparável com o vocabulário de uma linguagem natural como o Inglês), pode ser modelada com esse tipo de técnica. Isso inclui os textos nos arquivos PGN de Xadrez, que possuem um vocabulário - cerca de 14700 *tokens* - bem menor do que o do Inglês.
 
@@ -87,9 +87,85 @@ https://youtu.be/NV8Dlu6GhFQ
 
 A base de dados a ser usada é um conjunto de várias partidas em torneios, disponível no site [The Week in Chess](https://theweekinchess.com/zips). Ao todo são mais de 1400 arqivos *zip*, cada um contendo partidas de torneios profissionais ao redor do mundo em cada semana. Todas as partidas estão no formato PGN.
 
+#### Coleta dos dados
+
+O download dos dados pode ser automatizado com o seguinte trecho de código em Python:
+
+```
+import os
+
+url_base = 'https://theweekinchess.com/zips'
+for idx in range(920, 1431):
+  fname = f'twic{idx}g.zip'
+  print('Downloading', fname)
+  url = f'{url_base}/{fname}'
+  os.system(f'wget {url}')
+  os.system(f'mv {fname} downloaded/{fname}')
+```
+
+Como os arquivos baixados estão no formato ZIP, podemos automatiza a extração com o seguinte trecho de código:
+
+```
+import zipfile
+from glob import glob
+
+fns = glob('downloaded/*.zip')
+
+for fn in fns:
+  with zipfile.ZipFile(fn, 'r') as zip_ref:
+    zip_ref.extractall('extracted')
+```
+
+#### Limpeza dos dados
+
+Os comentários e cabeçalhos podem ser removidos usando expressões regulares, visto que o formato dos cabeçalhos e dos comentários é simples, pois são delimitados por colchetes (cabeçalhos) e chaves (comentários). Já os números que anotam os lances também podem ser removidos facilmente, pois são os tokens que intercalam as anotações dos lances em si.
+
+Visto que cada arquivo de texto extraído possui uma partida por linha (desconsiderando cabeçalhos), a separação das partidas pode ser feita através dos caracteres "\n". Uma vez limpas e separadas, as partidas podem ser salvas em outros arquivos que constituirão as bases de treino, validação e teste.
+
+### Treino do *tokenizer* e do modelo
+
+#### Treino do tokenizer
+
+Dado que usamos as bibliotecas Tokenizer e Transformers da Huggingface, precisamos primeiramente treinar o *tokenizer*, que será responsável por transformar os textos de entrada em sequências de índices que representam as palavras do nosso vocabulário. Uma vez que o tokenizer esteja treinado, uma arquitetura tipo BERT (MLM) ou GPT (CLM) pode ser treinada na nossa base de partidas.
+
+![image](https://user-images.githubusercontent.com/15349283/170173001-3c45d893-1bfe-4d32-bae4-8e1ff4c333e6.png)
+
+#### Lazy Dataset
+
+Em alguns casos, é possível que a base de treino não caiba inteiramente na memória. Isso exige que implementemos nossa própria classe que herda da classe Dataset da biblioteca PyTorch. Uma forma de implementar essa classe de modo a usar bases de dados arbitrariamente grandes é dividindo a base em vários arquivos (*sharding*), cada um com várias partidas. Daí em cada instante apenas uma parte das partidas precisa estar na memória.
+
+#### Treino do modelo
+
+Por se tratar de um modelo com dezenas de milhões de parâmetros treináveis, são necessárias várias horas ou até mesmo dias de treino em hardware acelerador (GPU). A função de custo é a entropia cruzada no caso do GPT-2.
+
+![image](https://user-images.githubusercontent.com/15349283/170175075-268e8904-c0c8-4025-87d3-4582f392b4a8.png)
+
+### Métricas de avaliação
+
+Além das métricas usuais para modelos de linguagem (ex: perplexidade e entropia cruzada), podemos usar também escores de *engines* de Xadrez (imagem abaixo), que medem a qualidade de um lance. Também podemos usar análise subjetiva de algum jogador profissional. A análise subjetiva é importante para detectar se os lances parecem "humanos".
+
+<p align="center">
+  <img src='https://user-images.githubusercontent.com/15349283/170174686-5cfa109c-9dfc-4b2b-bfe1-d9f6627ce2fa.png' width='600'>
+</p>
+
 ### Abordagens de modelagem generativa
 
-A ideia inicial é usar as anotações de lances (ex: ```Nf3```, ```e4```, ```Be7```) como palavras individuais em um texto para servir de tokens. Daí um modelo autorregressivo tipo BERT seria treinado a partir dessa tokenização. Uma vez que o modelo é treinado, a geração de novas partidas ou complementos de partidas iniciadas pode ocorrer com a geração de um token por vez ou através de *beam search*, onde os próximos **k** lances são escolhidos de modo a maximizar a probabilidade de acordo com o modelo. A desvantagem do beam search está no custo computacional elevado, crescendo exponencialmente com o tamanho de **k**.
+A ideia é usar as anotações de lances (ex: ```Nf3```, ```e4```, ```Be7```) como palavras individuais em um texto para servir de tokens. Daí um modelo autorregressivo tipo BERT e/ou GPT seria treinado a partir dessa tokenização. 
+
+Quando usamos um CLM, a parte generativa (decoder) retorna a probabilidade de cada palavra no vocabulário dadas as palavras anteriores (prompt). Usaremos os escores da saída do método **generate** para criar partidas baseadas em diferentes estratégias de amostragem. A mais simples delas é a *greedy*, onde cada novo token é gerado e concatenado aos últimos. Outra forma de amostrar sequências de tokens consiste em pegar os próximos *k* tokens com maior probabilidade conjunta (dados os anteriores). O caso onde *k = 1* equivale ao greedy.
+
+```
+outputs = model.generate(
+      input_ids,
+      do_sample=False,
+      max_length=len(input_ids[0]) + 1,
+      output_scores=True,
+      return_dict_in_generate=True,
+      pad_token_id=tokenizer.eos_token_id
+  )
+```
+
+A biblioteca python-chess, é útil para validar as saídas do modelo, de modo que apenas partidas válidas sejam geradas.
 
 ### Artigos de referência
 
@@ -119,10 +195,10 @@ A avaliação poderá ser tanto objetiva quanto subjetiva. Na primeira, é poss�
 | --      | --          | --         | --         | --         | --         | --          | --          |
 | Primeira Entrega  | 🟢 |  |  |  |  |  |  |
 | Coleta e tratamento da base  | 🟢 | 🟢 |  |  |  |  |  |
-| Primeiras baselines  |  |  | 🟢 |  |  |  |  |
-| Treinamento do modelo final  |  |  |  | 🟢 | 🟢 |  |  |
-| Avaliação objetiva do modelo final  |  |  |  |  |  | 🟢 |  |
-| * Avaliação subjetiva do modelo final  |  |  |  |  |  | 🟢 |  |
+| Primeiras baselines  |  |  |  |  | 🟢 |  |  |
+| Treinamento do modelo final  |  |  |  |  | 🟢 | 🟢 |  |
+| Avaliação objetiva do modelo final  |  |  |  |  |  |  | 🟢 |
+| * Avaliação subjetiva do modelo final  |  |  |  |  |  |  | 🟢 |
 | Escrita de relatório  |  |  |  |  |  |  | 🟢 |
 
 ## Referências Bibliográficas
