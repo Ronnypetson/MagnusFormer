@@ -140,6 +140,14 @@ Por se tratar de um modelo com dezenas de milhões de parâmetros treináveis, s
 
 ![image](https://user-images.githubusercontent.com/15349283/170175075-268e8904-c0c8-4025-87d3-4582f392b4a8.png)
 
+O modelo é treinado usando uma instância com GPU do Google Colab.
+
+#### Persistência do tokenizer e do modelo
+
+Checkpoints gerados durante o treino, o próprio modelo final e o tokenizer são mantidos numa pasta no Google Drive (vide imagem abaixo). Dessa forma, um treino pode ser retomado e executar através de vários dias.
+
+![image](https://user-images.githubusercontent.com/15349283/170177619-bdbe8d73-9c0c-49c6-bee2-a146a13c4606.png)
+
 ### Métricas de avaliação
 
 Além das métricas usuais para modelos de linguagem (ex: perplexidade e entropia cruzada), podemos usar também escores de *engines* de Xadrez (imagem abaixo), que medem a qualidade de um lance. Também podemos usar análise subjetiva de algum jogador profissional. A análise subjetiva é importante para detectar se os lances parecem "humanos".
