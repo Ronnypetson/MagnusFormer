@@ -10,18 +10,17 @@ oferecida no primeiro semestre de 2022, na Unicamp, sob supervisão da Profa. Dr
 |--|--|--|
 | Ronnypetson Souza da Silva  | 211848  | Ciência da Computação|
 
+## Resumo (abstract)
 
-## Descrição Resumida do Projeto
+No Xadrez, humanos e máquinas são capazes de jogar de modo que as máquinas são superiores. Entretanto, a forma como as máquinas jogam pode causar estranheza, pois encontram sequências de lances que não surgem naturalmente em partidas entre humanos (mesmo profissionais). Neste trabalho, geramos partidas sintéticas de Xadrez com a finalidade de mimetizar partidas com aparência "natural" entre seres humanos. Para tanto, treinamos um modelo de linguagem baseado em Transformer em uma base de partidas entre profissionais. Os resultados sugerem que o modelo é capaz de aprender bem as aberturas, apesar do jogo degradar depois.
+
+## Descrição do Problema/Motivação
 
 ### Tema do projeto, contexto e motivação
 
 O tema do projeto é a geração de partidas de Xadrez, usando a notação PGN (*Portable Game Notation*), que sejam semelhantes à partidas entre profissionais do jogo. Para tanto, deseja-se usar modelos de linguagem autorregressivos baseados em Transformer, tais como BERT (*Masked Language Model*) e GPT (*Causal Language Model*). A aplicação mais importante de um modelo generativo de Xadrez que imita jogadores humanos é tornar as *engines* mais parecidas com os humanos nos lances. Outra aplicação de partidas de Xadrez sintéticas semelhante às que humanos jogam podem ser usadas na literatura e no cinema (ex: *O Gambito da Rainha*, *Os Simpsons*, *Death Note*, *Harry Potter*), com geração condicionada e flexibilidade. Por ser compatível com modelos de linguagem e por possuir muitas partidas públicas que a usam, a notação PGN é uma escolha adequada para a tarefa em questão.
 
 Os modelos de linguagem autorregressivos baseados em Transformer têm mudado o estado-da-arte em várias tarefas de linguagem natural, tais como tradução, reponder à perguntas, raciocínio de bom senso e interpretação de texto. Também têm sido usados na geração de código em linguagens de programação, imagens vetorizadas tipo SVG e arquivos no formato MIDI. A princípio, uma base de textos em  qualquer linguagem, natual ou não, com um vocabulário de tamanho razoável (menor ou comparável com o vocabulário de uma linguagem natural como o Inglês), pode ser modelada com esse tipo de técnica. Isso inclui os textos nos arquivos PGN de Xadrez, que possuem um vocabulário - cerca de 14700 *tokens* - bem menor do que o do Inglês.
-
-### Objetivo
-
-O objetivo principal do projeto é a criação de um modelo generativo que seja capaz de produzir sequências de lances de Xadrez no formato PGN, de modo que gere partidas de Xadrez semelhantes à partidas jogadas por seres humanos no nível profissional (partidas jogadas em torneios). O modelo deve ser capaz de gerar partidas do início como também de completar partidas já começadas.
 
 ### Saída do modelo
 
@@ -77,9 +76,9 @@ A partida pode ser recuperada usando um leitor de PGN:
   <img src='/src/visualization/board.gif' width='300'>
 </p>
 
-### Vídeo de apresentação
+## Objetivo
 
-https://youtu.be/NV8Dlu6GhFQ
+O objetivo principal do projeto é a criação de um modelo generativo que seja capaz de produzir sequências de lances de Xadrez no formato PGN, de modo que gere partidas de Xadrez semelhantes à partidas jogadas por seres humanos no nível profissional (partidas jogadas em torneios). O modelo deve ser capaz de gerar partidas do início como também de completar partidas já começadas.
 
 ## Metodologia Proposta
 
@@ -103,7 +102,7 @@ for idx in range(920, 1431):
   os.system(f'mv {fname} downloaded/{fname}')
 ```
 
-Como os arquivos baixados estão no formato ZIP, podemos automatiza a extração com o seguinte trecho de código:
+Como os arquivos baixados estão no formato ZIP, podemos automatizar a extração com o seguinte trecho de código:
 
 ```
 import zipfile
@@ -150,17 +149,34 @@ Checkpoints gerados durante o treino, o próprio modelo final e o tokenizer são
 
 ### Métricas de avaliação
 
-Além das métricas usuais para modelos de linguagem (ex: perplexidade e entropia cruzada), podemos usar também escores de *engines* de Xadrez (imagem abaixo), que medem a qualidade de um lance. Também podemos usar análise subjetiva de algum jogador profissional. A análise subjetiva é importante para detectar se os lances parecem "humanos".
+Usamos a engine Stockfish como ponto de partida para avaliar a qualidade das posições. Contrário ao que se pensava na segunda entrega do trabalho, é a Stockfish é open-source e pode ser instalada e usada gratuitamente. A Stockfish é uma das melhores engines de Xadrez em uso na atualidade.
+
+A avaliação de uma partida consiste em uma sequência dos escores de cada uma das suas posições, na ordem das jogadas. O escore de uma posição é medido em "centi-peões", o que significa que um valor de 100 equivale a uma vantagem média de um peão. Um escore positivo significa posição melhor para as peças brancas, enquanto que um escore negativo significa uma posição melhor para as peças pretas.
 
 <p align="center">
   <img src='https://user-images.githubusercontent.com/15349283/170174686-5cfa109c-9dfc-4b2b-bfe1-d9f6627ce2fa.png' width='600'>
 </p>
+
+Uma vez que os escores das posições de uma partida são calculados, podemos gerar as seguintes métricas:
+
+*   TTB (time to blunder): número de lances até o primeiro *blunder*.
+*   NB (number of blunders): número de *blunders* cometidos na partida.
+*   Média dos escores na partida.
+*   Desvio-padrão dos escores na partida.
+
+Definimos um *blunder* como um lance que resulta numa posição pior para o jogador que a executou em pelo menos 250 centi-peões. Essa definição não é canônica no jodo de Xadrez, apenas escolhida com base na nossa intuição de quanto um lance "ruim" piora a posição.
 
 ### Abordagens de modelagem generativa
 
 A ideia é usar as anotações de lances (ex: ```Nf3```, ```e4```, ```Be7```) como palavras individuais em um texto para servir de tokens. Daí um modelo autorregressivo tipo BERT e/ou GPT seria treinado a partir dessa tokenização. 
 
 Quando usamos um CLM, a parte generativa (decoder) retorna a probabilidade de cada palavra no vocabulário dadas as palavras anteriores (prompt). Usaremos os escores da saída do método **generate** para criar partidas baseadas em diferentes estratégias de amostragem. A mais simples delas é a *greedy*, onde cada novo token é gerado e concatenado aos últimos. Outra forma de amostrar sequências de tokens consiste em pegar os próximos *k* tokens com maior probabilidade conjunta (dados os anteriores). O caso onde *k = 1* equivale ao greedy.
+
+Nossa geração de partidas possui três parâmetros principais:
+
+*   O tamanho do *lookahead* na busca por jogadas, sendo 1, 2 ou 3.
+*   O lance inicial (*start*) das peças brancas, sendo "e4", "d4", "c4" ou "Nf3".
+*   O número de repetições dados os parâmetros acima. Esse valor é igual a 10.
 
 ```
 outputs = model.generate(
@@ -189,25 +205,47 @@ A biblioteca python-chess, é útil para validar as saídas do modelo, de modo q
 3. Biblioteca [python-chess](https://python-chess.readthedocs.io/en/latest/) para processar as partidas no formato PGN.
 4. Biblioteca [Hugginface Transformers](https://huggingface.co/docs/transformers/index) para carregar e treinar os modelos de linguagem.
 
-### Resultados esperados
+## Resultados e Discussão dos Resultados
 
-Espera-se que o modelo generativo crie partidas que sejam coerentes do ponto de vista do Xadrez profissional, pelo menos até a fase de abertura do jogo. Também espera-se que o modelo seja capaz de continuar partidas com lances básicos.
+*Na entrega parcial do projeto (E2), essa seção pode conter resultados parciais, explorações de implementações realizadas e discussões sobre tais experimentos, incluindo decisões de mudança de trajetória ou descrição de novos experimentos, como resultado dessas explorações. Na entrega final do projeto (E3), essa seção deve elencar os principais resultados obtidos (não necessariamente todos), que melhor representam o cumprimento dos objetivos do projeto. A discussão dos resultados pode ser realizada em seção separada ou integrada à sessão de resultados. Isso é uma questão de estilo. Considera-se fundamental que a apresentação de resultados não sirva como um tratado que tem como único objetivo mostrar que "se trabalhou muito". O que se espera da sessão de resultados é que ela apresente e discuta somente os resultados mais relevantes, que mostre os potenciais e/ou limitações da metodologia, que destaquem aspectos de performance e que contenha conteúdo que possa ser classificado como compartilhamento organizado, didático e reprodutível de conhecimento relevante para a comunidade.*
 
-### Proposta de avaliação
+A seguir comparamos as distribuições de partidas entre humanos com a distribuição de partidas sintéticas.
 
-A avaliação poderá ser tanto objetiva quanto subjetiva. Na primeira, é possível usar *engines* de Xadrez, que são programas de computador capazes de quantificar a qualidade de uma posição para ambos os jogadores. Os escores gerados pelas engines podem ser usados como métrica para a qualidade dos lances gerados pelo modelo. Existem várias engines de Xadrez acessíveis, como as usadas no [Chess.com](https://chess.com) e no [Lichess](https://lichess.org). Na forma subjetiva, é preciso pedir a avaliação de algum jogador de Xadrez com experiência em torneios. Entre as duas formas de avaliação, a forma objetiva é a mais factível, embora uma avaliação subjetiva possa detectar tendências de jogo e estilo.
+### Time to Blunder
 
-## Cronograma
+Human
+![image](https://user-images.githubusercontent.com/15349283/177166933-e846052f-ced2-48ea-8741-3b6978745cea.png)
 
-| Tarefa  | 27 de Abril | 04 de Maio | 11 de Maio | 18 de Maio | 25 de Maio | 01 de Junho | 08 de Junho |
-| --      | --          | --         | --         | --         | --         | --          | --          |
-| Primeira Entrega  | 🟢 |  |  |  |  |  |  |
-| Coleta e tratamento da base  | 🟢 | 🟢 |  |  |  |  |  |
-| Primeiras baselines  |  |  |  |  | 🟢 |  |  |
-| Treinamento do modelo final  |  |  |  |  | 🟢 | 🟢 |  |
-| Avaliação objetiva do modelo final  |  |  |  |  |  |  | 🟢 |
-| * Avaliação subjetiva do modelo final  |  |  |  |  |  |  | 🟢 |
-| Escrita de relatório  |  |  |  |  |  |  | 🟢 |
+Model
+![image](https://user-images.githubusercontent.com/15349283/177166984-331a96ca-edd3-4bf9-be5e-efbc334b8ffd.png)
+
+### Number of Blunders
+
+Human
+![image](https://user-images.githubusercontent.com/15349283/177167017-83579581-22df-4ea9-8214-9092f23e4890.png)
+
+Model
+![image](https://user-images.githubusercontent.com/15349283/177167045-ee9454d0-6d7e-4065-9c5c-f4de219cdd1d.png)
+
+### Mean of Scores
+
+Human
+![image](https://user-images.githubusercontent.com/15349283/177167103-e180eef9-d4fb-4cc9-9c5f-3fdd07e0e175.png)
+
+Model
+![image](https://user-images.githubusercontent.com/15349283/177167164-de0ecf5f-4f49-40ac-a739-c5627aeee680.png)
+
+### Standard Deviation of Scores
+
+Human
+![image](https://user-images.githubusercontent.com/15349283/177167250-b1774856-f1bd-4e15-b5f3-6d298ea7833f.png)
+
+Model
+![image](https://user-images.githubusercontent.com/15349283/177167273-23eab5a3-94e7-4509-b581-1c9404b55551.png)
+
+## Conclusão
+
+*A sessão de Conclusão deve ser uma sessão que recupera as principais informações já apresentadas no relatório e que aponta para trabalhos futuros. Na entrega parcial do projeto (E2) pode conter informações sobre quais etapas ou como o projeto será conduzido até a sua finalização. Na entrega final do projeto (E3) espera-se que a conclusão elenque, dentre outros aspectos, possibilidades de continuidade do projeto.*
 
 ## Referências Bibliográficas
 
