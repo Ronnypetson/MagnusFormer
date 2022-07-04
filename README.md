@@ -33,7 +33,7 @@ A saída do modelo será uma sequência de anotações de lances de Xadrez numa 
 * Dama: Q (Queen) ♕♛
 * Rei: K (King) ♔♚
 
-As linhas e colunas do tabuleiro são representadas pelos números de ```1``` à ```8``` e pelas letras de ```a``` à ```h```, como mostra a figura abaixo. Dessa maneira, quando queremos dizer "mover o cavalo para a casa f3", escrevemos ```Nf3``` na notação PGN. Quando a peça a ser movida é ambígua, pode-se especificar a coluna e/ou a linha da casa que a peça ocupa caso seja necessário, como por exemplo ```Ngf3```, ```N5f3``` ou ```Ne5f3```. Esses lances também representam o movimento de um cavalo para a casa ```f3```.
+As linhas e colunas do tabuleiro são representadas pelos números de ```1``` à ```8``` e pelas letras de ```a``` à ```h```, como mostra a figura abaixo. Dessa maneira, quando queremos dizer "mover o cavalo para a casa f3", escrevemos ```Nf3``` na notação PGN. Quando a peça a ser movida é ambígua, pode-se especificar a coluna e/ou a linha da casa que a peça ocupa caso seja necessário, como por exemplo ```Ngf3```, ```N5f3``` ou ```Ne5f3```. Esses lances também representam o movimento de um cavalo para a casa ```f3```. Imagem obtida da [Wikipedia](https://www.wikipedia.org/).
 
 <p align="center">
   <img src='https://upload.wikimedia.org/wikipedia/commons/b/b6/SCD_algebraic_notation.svg' width='300'>
@@ -70,7 +70,7 @@ b3 Ke6 a3 Kd6 axb4 cxb4 Ra5 Nd5 f3 Bc8 Kf2 Bf5 Ra7 g6 Ra6+ Kc5 Ke1 Nf4 g3 Nxh3
 Kd2 Kb5 Rd6 Kc5 Ra6 Nf2 g4 Bd3 Re6 1/2-1/2
 ```
 
-A partida pode ser recuperada usando um leitor de PGN:
+A partida pode ser recuperada usando um leitor de PGN (gif obtido em [Chess.com](https://www.chess.com/)):
 
 <p align="center">
   <img src='/src/visualization/board.gif' width='300'>
@@ -133,6 +133,12 @@ Dado que usamos as bibliotecas Tokenizer e Transformers da Huggingface, precisam
 
 Em alguns casos, é possível que a base de treino não caiba inteiramente na memória. Isso exige que implementemos nossa própria classe que herda da classe Dataset da biblioteca PyTorch. Uma forma de implementar essa classe de modo a usar bases de dados arbitrariamente grandes é dividindo a base em vários arquivos (*sharding*), cada um com várias partidas. Daí em cada instante apenas uma parte das partidas precisa estar na memória.
 
+Durante o carregamento das partidas, adicionamos o seguinte cabeçalho, que indica ao modelo a posição inicial das peças:
+
+```
+a2 a7 b2 b7 c2 c7 d2 d7 e2 e7 f2 f7 g2 g7 h2 h7 Ra1 Ra8 Nb1 Nb8 Bc1 Bc8 Qd1 Qd8 Ke1 Ke8 Bf1 Bf8 Ng1 Ng8 Rh1 Rh8
+```
+
 #### Treino do modelo
 
 Por se tratar de um modelo com dezenas de milhões de parâmetros treináveis, são necessárias várias horas ou até mesmo dias de treino em hardware acelerador (GPU). A função de custo é a entropia cruzada no caso do GPT-2.
@@ -151,7 +157,7 @@ Checkpoints gerados durante o treino, o próprio modelo final e o tokenizer são
 
 Usamos a engine Stockfish como ponto de partida para avaliar a qualidade das posições. Contrário ao que se pensava na segunda entrega do trabalho, é a Stockfish é open-source e pode ser instalada e usada gratuitamente. A Stockfish é uma das melhores engines de Xadrez em uso na atualidade.
 
-A avaliação de uma partida consiste em uma sequência dos escores de cada uma das suas posições, na ordem das jogadas. O escore de uma posição é medido em "centi-peões", o que significa que um valor de 100 equivale a uma vantagem média de um peão. Um escore positivo significa posição melhor para as peças brancas, enquanto que um escore negativo significa uma posição melhor para as peças pretas.
+A avaliação de uma partida consiste em uma sequência dos escores de cada uma das suas posições, na ordem das jogadas. O escore de uma posição é medido em "centi-peões", o que significa que um valor de 100 equivale a uma vantagem média de um peão. Um escore positivo significa posição melhor para as peças brancas, enquanto que um escore negativo significa uma posição melhor para as peças pretas. Imagem obtida em [Chess.com](https://www.chess.com/).
 
 <p align="center">
   <img src='https://user-images.githubusercontent.com/15349283/170174686-5cfa109c-9dfc-4b2b-bfe1-d9f6627ce2fa.png' width='600'>
@@ -191,13 +197,6 @@ outputs = model.generate(
 
 A biblioteca python-chess, é útil para validar as saídas do modelo, de modo que apenas partidas válidas sejam geradas.
 
-### Artigos de referência
-
-1. [The Chess Transformer: Mastering Play using Generative Language Models](https://arxiv.org/abs/2008.04057) (2020). David Noever, Matt Ciolino, Josh Kalin.
-2. [The Go Transformer: Natural Language Modeling for Game Play](https://arxiv.org/abs/2007.03500) (2020). Matthew Ciolino, David Noever, Josh Kalin.
-3. [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (2017). Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin.
-4. [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding](https://arxiv.org/abs/1810.04805) (2018). Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova.
-
 ### Ferramentas
 
 1. [Python 3.7](https://www.python.org/downloads/release/python-370/) ou superior.
@@ -207,42 +206,46 @@ A biblioteca python-chess, é útil para validar as saídas do modelo, de modo q
 
 ## Resultados e Discussão dos Resultados
 
-*Na entrega parcial do projeto (E2), essa seção pode conter resultados parciais, explorações de implementações realizadas e discussões sobre tais experimentos, incluindo decisões de mudança de trajetória ou descrição de novos experimentos, como resultado dessas explorações. Na entrega final do projeto (E3), essa seção deve elencar os principais resultados obtidos (não necessariamente todos), que melhor representam o cumprimento dos objetivos do projeto. A discussão dos resultados pode ser realizada em seção separada ou integrada à sessão de resultados. Isso é uma questão de estilo. Considera-se fundamental que a apresentação de resultados não sirva como um tratado que tem como único objetivo mostrar que "se trabalhou muito". O que se espera da sessão de resultados é que ela apresente e discuta somente os resultados mais relevantes, que mostre os potenciais e/ou limitações da metodologia, que destaquem aspectos de performance e que contenha conteúdo que possa ser classificado como compartilhamento organizado, didático e reprodutível de conhecimento relevante para a comunidade.*
-
-A seguir comparamos as distribuições de partidas entre humanos com a distribuição de partidas sintéticas.
+A seguir comparamos as distribuições de partidas entre humanos com a distribuição de partidas sintéticas. Não fazemos uma comparação explícita com as engines pelo fato de que a própria engine é usada para gerar os escores das posições. Isso significa que uma engine sempre atribuiria alto valor para suas próprias jogadas e faria partidas "perfeitas" sob seu ponto de vista.
 
 Podemos notar que o primeiro blunder tende a ocorrer, em média, mais cedo do que nos jogos humanos, apesar de que há mais jogos humanos com blunder nos 10 primeiros lances do que nos jogos sintéticos. Acreditamos que isso se deva ao fato de que o modelo aprende bem as aberturas, mas comete erros logo em seguida. Já os humanos tendem a saber aberturas mas eventualmente esquecem partes, principalmente em aberturas mais longas, compensando depois no meio-jogo e nos finais.
 
 A média dos escores tende a ter o mesmo comportamento entre as partidas reais e as sintéticas. A moda próxima a 0 indica o equilíbrio entre as peças brancas e pretas, apesar das brancas possuirem uma leve vantagem inicial. Já o intervalo dos desvios-padrão é maior nas partidas sintéticas, refletindo o fato de que o número de blunders maior gera mais oscilação na sequência de escores de cada partida.
 
-![image](https://user-images.githubusercontent.com/15349283/177212381-28e788f8-0efd-46d6-a295-09ca2e1617da.png)
+<p align="center">
+  <img src='https://user-images.githubusercontent.com/15349283/177212381-28e788f8-0efd-46d6-a295-09ca2e1617da.png'>
+</p>
 
 A seguir temos a mesma comparação só que com as partidas geradas com lookeahead = 3. Nesse caso, podemos dizer que as partidas geradas tem melhor qualidade que aquelas com lookahead 1 ou 2, pois tiveram mais profundidade na amostragem dos lances. Essa qualidade é refletida da distribuição dos blunders, pois tendem a possuir menos blunders que as de lookahead 1 e 2, mesmo que ainda não alcance as partidas de humanos. Na mesma linha de raciocínio, o Time to Blunder parece aumentar nessa parte das partidas sintéticas, assim como o intervalo dos desvios-padrão parece diminuir.
 
 Assim como nas partidas com lookahead 1 e 2, essas possuem um bom reportório de aberturas.
 
-![image](https://user-images.githubusercontent.com/15349283/177212422-6900af2f-5e13-4bb6-aafb-99868f80f93a.png)
+<p align="center">
+  <img src='https://user-images.githubusercontent.com/15349283/177212422-6900af2f-5e13-4bb6-aafb-99868f80f93a.png'>
+</p>
 
 ### Exemplos de partidas sintéticas
 
-A seguir temos alguns exemplos dentre as melhores partidas sintéticas:
+A seguir temos alguns exemplos dentre as melhores (maior TTB e menor NB) partidas sintéticas (clique para visualizar isoladamente). Podemos perceber que são partidas que terminam em empate. De certa forma, é mais comum que partidas sem lances errados terminem empatadas.
+
+As partidas da primeira linha são posições similares às de Abertura Inglesa. A partida do canto inferior esquerdo possui posição similar ao Gambito da Dama negado, embora a ordem dos lances seja diferente. Gifs obtidos em [Chess.com](https://www.chess.com/).
 
 <div class="row">
   <div class="column", align="center">
     <img src='/src/visualization/board(2).gif' width='300'>
-    <div width=200px background=none height=200px display=inline-block></div>
     <img src='/src/visualization/board(3).gif' width='300'>
+    <img src='/src/visualization/board(6).gif' width='300'>
   </div>
   <div class="column", align="center">
     <img src='/src/visualization/board(4).gif' width='300'>
-    <div width=200px background=none height=200px display=inline-block></div>
     <img src='/src/visualization/board(5).gif' width='300'>
+    <img src='/src/visualization/board(7).gif' width='300'>
   </div>
 </div>
 
 ## Conclusão
 
-*A sessão de Conclusão deve ser uma sessão que recupera as principais informações já apresentadas no relatório e que aponta para trabalhos futuros. Na entrega parcial do projeto (E2) pode conter informações sobre quais etapas ou como o projeto será conduzido até a sua finalização. Na entrega final do projeto (E3) espera-se que a conclusão elenque, dentre outros aspectos, possibilidades de continuidade do projeto.*
+Neste trabalho, apresentamos um modelo autoregressivo baseado em Transformer treinado para gerar partidas de Xadrez jogadas entre humanos em torneios. Nosso objetivo era que essas partidas sintéticas parecessem "naturais", ao contrário das engines. Para tanto usamos as avaliações numéricas da engine Stockfish para comparar as partidas reais e as sintéticas. Observamos que o modelo autoregressivo é capaz de aprender uma boa variedade de aberturas e executá-las perfeitamente, mas sofre degradação do jogo a partir do meio-jogo e tem dificuldade em executar lances básicos nos finais de partida. Por outro lado, alguns parâmetros da amostragem dos lances podem ser ajustados para conseguir partidas melhores, mas com custo computacional exponencialmente crescente. Para trabalhos futuros é possível investigar as partidas nessas configurações mais profundas, com modelos de maior capacidade treinados por mais tempo e com mais dados.
 
 ## Referências Bibliográficas
 
