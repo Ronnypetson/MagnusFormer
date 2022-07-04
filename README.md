@@ -228,17 +228,19 @@ Assim como nas partidas com lookahead 1 e 2, essas possuem um bom reportório de
 
 A seguir temos alguns exemplos dentre as melhores (maior TTB e menor NB) partidas sintéticas (clique para visualizar isoladamente). Podemos perceber que são partidas que terminam em empate. De certa forma, é mais comum que partidas sem lances errados terminem empatadas.
 
-As partidas da primeira linha são posições similares às de Abertura Inglesa. A partida do canto inferior esquerdo possui posição similar ao Gambito da Dama negado, embora a ordem dos lances seja diferente. Gifs obtidos em [Chess.com](https://www.chess.com/).
+As três primeiras partidas (de cima pra baixo e da esquerda para a direita) são posições similares às de Abertura Inglesa. A quarta possui posição similar ao Gambito da Dama negado, embora a ordem dos lances seja diferente. Gifs obtidos em [Chess.com](https://www.chess.com/).
 
 <div class="row">
   <div class="column", align="center">
     <img src='/src/visualization/board(2).gif' width='300'>
     <img src='/src/visualization/board(3).gif' width='300'>
-    <img src='/src/visualization/board(6).gif' width='300'>
   </div>
   <div class="column", align="center">
     <img src='/src/visualization/board(4).gif' width='300'>
     <img src='/src/visualization/board(5).gif' width='300'>
+  </div>
+  <div class="column", align="center">
+    <img src='/src/visualization/board(6).gif' width='300'>
     <img src='/src/visualization/board(7).gif' width='300'>
   </div>
 </div>
