@@ -219,7 +219,26 @@ A média dos escores tende a ter o mesmo comportamento entre as partidas reais e
 
 A seguir temos a mesma comparação só que com as partidas geradas com lookeahead = 3. Nesse caso, podemos dizer que as partidas geradas tem melhor qualidade que aquelas com lookahead 1 ou 2, pois tiveram mais profundidade na amostragem dos lances. Essa qualidade é refletida da distribuição dos blunders, pois tendem a possuir menos blunders que as de lookahead 1 e 2, mesmo que ainda não alcance as partidas de humanos. Na mesma linha de raciocínio, o Time to Blunder parece aumentar nessa parte das partidas sintéticas, assim como o intervalo dos desvios-padrão parece diminuir.
 
+Assim como nas partidas com lookahead 1 e 2, essas possuem um bom reportório de aberturas.
+
 ![image](https://user-images.githubusercontent.com/15349283/177212422-6900af2f-5e13-4bb6-aafb-99868f80f93a.png)
+
+### Exemplos de partidas sintéticas
+
+A seguir temos alguns exemplos dentre as melhores partidas sintéticas:
+
+<div class="row">
+  <div class="column", align="center">
+    <img src='/src/visualization/board(2).gif' width='300'>
+    <div width=200px background=none height=200px display=inline-block></div>
+    <img src='/src/visualization/board(3).gif' width='300'>
+  </div>
+  <div class="column", align="center">
+    <img src='/src/visualization/board(4).gif' width='300'>
+    <div width=200px background=none height=200px display=inline-block></div>
+    <img src='/src/visualization/board(5).gif' width='300'>
+  </div>
+</div>
 
 ## Conclusão
 
