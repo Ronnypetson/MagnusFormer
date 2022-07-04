@@ -211,37 +211,15 @@ A biblioteca python-chess, é útil para validar as saídas do modelo, de modo q
 
 A seguir comparamos as distribuições de partidas entre humanos com a distribuição de partidas sintéticas.
 
-### Time to Blunder
+Podemos notar que o primeiro blunder tende a ocorrer, em média, mais cedo do que nos jogos humanos, apesar de que há mais jogos humanos com blunder nos 10 primeiros lances do que nos jogos sintéticos. Acreditamos que isso se deva ao fato de que o modelo aprende bem as aberturas, mas comete erros logo em seguida. Já os humanos tendem a saber aberturas mas eventualmente esquecem partes, principalmente em aberturas mais longas, compensando depois no meio-jogo e nos finais.
 
-Human
-![image](https://user-images.githubusercontent.com/15349283/177166933-e846052f-ced2-48ea-8741-3b6978745cea.png)
+A média dos escores tende a ter o mesmo comportamento entre as partidas reais e as sintéticas. A moda próxima a 0 indica o equilíbrio entre as peças brancas e pretas, apesar das brancas possuirem uma leve vantagem inicial. Já o intervalo dos desvios-padrão é maior nas partidas sintéticas, refletindo o fato de que o número de blunders maior gera mais oscilação na sequência de escores de cada partida.
 
-Model
-![image](https://user-images.githubusercontent.com/15349283/177166984-331a96ca-edd3-4bf9-be5e-efbc334b8ffd.png)
+![image](https://user-images.githubusercontent.com/15349283/177212381-28e788f8-0efd-46d6-a295-09ca2e1617da.png)
 
-### Number of Blunders
+A seguir temos a mesma comparação só que com as partidas geradas com lookeahead = 3. Nesse caso, podemos dizer que as partidas geradas tem melhor qualidade que aquelas com lookahead 1 ou 2, pois tiveram mais profundidade na amostragem dos lances. Essa qualidade é refletida da distribuição dos blunders, pois tendem a possuir menos blunders que as de lookahead 1 e 2, mesmo que ainda não alcance as partidas de humanos. Na mesma linha de raciocínio, o Time to Blunder parece aumentar nessa parte das partidas sintéticas, assim como o intervalo dos desvios-padrão parece diminuir.
 
-Human
-![image](https://user-images.githubusercontent.com/15349283/177167017-83579581-22df-4ea9-8214-9092f23e4890.png)
-
-Model
-![image](https://user-images.githubusercontent.com/15349283/177167045-ee9454d0-6d7e-4065-9c5c-f4de219cdd1d.png)
-
-### Mean of Scores
-
-Human
-![image](https://user-images.githubusercontent.com/15349283/177167103-e180eef9-d4fb-4cc9-9c5f-3fdd07e0e175.png)
-
-Model
-![image](https://user-images.githubusercontent.com/15349283/177167164-de0ecf5f-4f49-40ac-a739-c5627aeee680.png)
-
-### Standard Deviation of Scores
-
-Human
-![image](https://user-images.githubusercontent.com/15349283/177167250-b1774856-f1bd-4e15-b5f3-6d298ea7833f.png)
-
-Model
-![image](https://user-images.githubusercontent.com/15349283/177167273-23eab5a3-94e7-4509-b581-1c9404b55551.png)
+![image](https://user-images.githubusercontent.com/15349283/177212422-6900af2f-5e13-4bb6-aafb-99868f80f93a.png)
 
 ## Conclusão
 
